@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmaVida — Login</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="login-body">
+    <div class="login-topbar">
+        <button id="btn-dark-mode-login" type="button" class="btn-dark-mode" onclick="toggleDarkModeLogin()">🌙 Modo oscuro</button>
+    </div>
+
+    <div class="login-container">
+        <h1>FarmaVida</h1>
+        <p>Ingresa tus credenciales para continuar</p>
+
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+
+        <form method="POST">
+            <input type="text" name="usuario" placeholder="Usuario" required>
+            <div class="password-input-wrap">
+                <input id="login-password" type="password" name="contraseña" placeholder="Contraseña" required>
+                <button id="btn-toggle-password" type="button" class="btn-password-toggle" onclick="toggleLoginPassword()" aria-label="Mostrar u ocultar contraseña">👁️</button>
+            </div>
+            <button type="submit">Ingresar</button>
+        </form>
+    </div>
+
+    <script>
+        function actualizarTextoBotonTemaLogin() {
+            const btn = document.getElementById('btn-dark-mode-login');
+            if (!btn) return;
+            const esOscuro = document.body.classList.contains('dark-mode');
+            btn.textContent = esOscuro ? '☀️ Modo claro' : '🌙 Modo oscuro';
+        }
+
+        function inicializarTemaLogin() {
+            const temaGuardado = localStorage.getItem('farmavida_tema');
+            if (temaGuardado === 'dark') {
+                document.body.classList.add('dark-mode');
+            }
+            actualizarTextoBotonTemaLogin();
+        }
+
+        function toggleDarkModeLogin() {
+            document.body.classList.toggle('dark-mode');
+            const esOscuro = document.body.classList.contains('dark-mode');
+            localStorage.setItem('farmavida_tema', esOscuro ? 'dark' : 'light');
+            actualizarTextoBotonTemaLogin();
+        }
+
+        function toggleLoginPassword() {
+            const input = document.getElementById('login-password');
+            const btn = document.getElementById('btn-toggle-password');
+            if (!input || !btn) return;
+            const mostrar = input.type === 'password';
+            input.type = mostrar ? 'text' : 'password';
+            btn.textContent = mostrar ? '🙈' : '👁️';
+            btn.setAttribute('aria-label', mostrar ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        }
+
+        document.addEventListener('DOMContentLoaded', inicializarTemaLogin);
+    </script>
+</body>
+</html>

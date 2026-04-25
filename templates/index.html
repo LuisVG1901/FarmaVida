@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FarmaVida</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+</head>
+<body>
+<input type="hidden" id="session-id-usuario" value="{{ session['id_usuario'] }}">
+<button id="btn-menu" onclick="toggleMenu()" position:fixed; top:15px; left:15px; z-index:200; background:#1a6b4a; color:white; border:none; border-radius:6px; padding:10px 14px; font-size:18px; cursor:pointer;">☰</button>
+   <div id="overlay-menu" onclick="toggleMenu()"></div>
+    <div id="sidebar">
+        <h1>FarmaVida</h1>
+        <ul>
+            <li onclick="mostrarModulo('inicio')">Inicio</li>
+            {% if session['rol'] == 1 %}
+            <li onclick="mostrarModulo('productos')">Productos</li>
+            {% endif %}
+            <li onclick="mostrarModulo('inventario')">Inventario</li>
+            <li onclick="mostrarModulo('ventas')">Ventas</li>
+            {% if session['rol'] == 1 %}
+            <li onclick="mostrarModulo('compras')">Compras</li>
+            <li onclick="mostrarModulo('usuarios')">Usuarios</li>
+            {% endif %}
+            <li onclick="mostrarModulo('clientes')">Clientes</li>
+            <li onclick="mostrarModulo('reportes')">Reportes</li>
+        </ul>
+        <div class="sidebar-bottom">
+            <span>{{ session['nombre_rol'] | capitalize }}</span>
+            <a href="{{ url_for('logout') }}">Cerrar sesión</a>
+        </div>
+    </div>
+
+    <div id="contenido">
+        <div class="topbar-global">
+            <button id="btn-dark-mode" onclick="toggleDarkMode()" class="btn-dark-mode">Modo oscuro</button>
+        </div>
+
+        <div id="inicio" class="modulo">
+    <div id="bienvenida" style="margin-bottom:25px;">
+        <h2>Bienvenido(a), {{ session['nombre'] }}</h2>
+        <p style="color:#888; font-size:14px;">{{ session['nombre_rol'] | capitalize }} — FarmaVida</p>
+    </div>
+
+    <!-- Accesos rápidos -->
+<div style="display:flex; gap:10px; margin-bottom:25px; flex-wrap:wrap;">
+    <button onclick="mostrarModulo('ventas')" style="padding:10px 20px; background:#1a6b4a; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">+ Nueva venta</button>
+    {% if session['rol'] == 1 %}
+    <button onclick="mostrarModulo('productos')" style="padding:10px 20px; background:#1a6b4a; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">+ Agregar producto</button>
+    <button onclick="mostrarModulo('compras')" style="padding:10px 20px; background:#1a6b4a; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">+ Registrar compra</button>
+    {% endif %}
+    <button onclick="mostrarModulo('inventario')" style="padding:10px 20px; background:#145c3d; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">Ver inventario</button>
+</div>
+
+    <!-- Fecha y hora -->
+<div style="margin-bottom:20px;">
+    <p style="font-size:13px; color:#888;" id="fecha-hora-actual"></p>
+</div>
+
+<!-- Tarjetas resumen -->
+<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:15px; margin-bottom:15px;">
+    <div class="tarjeta-resumen">
+        <span class="tarjeta-label">Productos registrados</span>
+        <span class="tarjeta-valor" id="card-productos">0</span>
+    </div>
+    <div class="tarjeta-resumen">
+        <span class="tarjeta-label">Clientes registrados</span>
+        <span class="tarjeta-valor" id="card-clientes">0</span>
+    </div>
+    <div class="tarjeta-resumen">
+        <span class="tarjeta-label">Ventas hoy</span>
+        <span class="tarjeta-valor" id="card-ventas-hoy">0</span>
+        <span class="tarjeta-monto" id="card-ventas-monto">$0</span>
+    </div>
+</div>
+<div style="display:grid; grid-template-columns:repeat(3, 1fr); gap:15px; margin-bottom:25px;">
+    <div class="tarjeta-resumen">
+        <span class="tarjeta-label">Compras hoy</span>
+        <span class="tarjeta-valor" id="card-compras-hoy">0</span>
+        <span class="tarjeta-monto" id="card-compras-monto">$0</span>
+    </div>
+    <div class="tarjeta-resumen">
+        <span class="tarjeta-label">Ventas del mes</span>
+        <span class="tarjeta-valor" id="card-ventas-mes">0</span>
+        <span class="tarjeta-monto" id="card-ventas-mes-monto">$0</span>
+    </div>
+    <div class="tarjeta-resumen">
+        <span class="tarjeta-label">Compras del mes</span>
+        <span class="tarjeta-valor" id="card-compras-mes">0</span>
+        <span class="tarjeta-monto" id="card-compras-mes-monto">$0</span>
+        </div>
+    </div>
+
+    <!-- Alertas -->
+    <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+        <div>
+            <h3 style="color:#cc0000; margin-bottom:10px; font-size:16px;">Stock bajo</h3>
+            <div id="inicio-bajo-stock">
+                <p style="color:#888; font-size:14px;">Sin alertas de stock bajo.</p>
+            </div>
+        </div>
+        <div>
+            <h3 style="color:#856404; margin-bottom:10px; font-size:16px;">Próximos a vencer</h3>
+            <div id="inicio-proximos-vencer">
+                <p style="color:#888; font-size:14px;">Sin alertas de vencimiento.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Últimas 5 ventas -->
+<div style="margin-bottom:25px;">
+    <h3 style="color:#1a6b4a; margin-bottom:15px; font-size:16px;">Últimas ventas</h3>
+    <table id="tabla-ultimas-ventas">
+        <thead>
+            <tr>
+                <th>No. Factura</th>
+                <th>Fecha</th>
+                <th>Cliente</th>
+                <th>Atendido por</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpo-ultimas-ventas"></tbody>
+    </table>
+</div>
+<!-- Productos más vendidos -->
+<div style="margin-bottom:25px;">
+    <h3 style="color:#1a6b4a; margin-bottom:15px; font-size:16px;">Productos más vendidos</h3>
+    <table id="tabla-productos-vendidos">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Unidades vendidas</th>
+            </tr>
+        </thead>
+        <tbody id="cuerpo-productos-vendidos"></tbody>
+    </table>
+</div>
+<!-- Gráfico ventas últimos 7 días -->
+<div style="margin-bottom:25px;">
+    <h3 style="color:#1a6b4a; margin-bottom:15px; font-size:16px;">Ventas últimos 7 días</h3>
+    <canvas id="grafico-ventas" height="100"></canvas>
+</div>
+</div>
+
+    
+        {% if session['rol'] == 1 %}
+        <div id="productos" class="modulo">
+            <h2>Productos</h2>
+            <div class="barra-acciones">
+                <input type="text" id="buscador-productos" placeholder="Buscar producto..." onkeyup="filtrarProductos()">
+                <button onclick="abrirFormProducto()">+ Agregar producto</button>
+            </div>
+            <div id="form-producto" class="formulario" style="display:none;">
+                <h3 id="titulo-form-producto">Agregar producto</h3>
+                <input type="hidden" id="producto-id">
+                <div class="fila-form">
+                    <div>
+                        <label>Nombre</label>
+                        <input type="text" id="producto-nombre" placeholder="Nombre del producto">
+                    </div>
+                    <div>
+                        <label>Categoría</label>
+                        <select id="producto-categoria">
+                            <option value="">Selecciona una categoría</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="fila-form">
+                    <div>
+                        <label>Precio de venta</label>
+                        <input type="number" id="producto-precio" placeholder="0.00">
+                    </div>
+                </div>
+                <div class="fila-form">
+                    <div>
+                        <label>Stock mínimo</label>
+                        <input type="number" id="producto-stock-minimo" placeholder="5">
+                    </div>
+                    <div>
+                        <label>Nueva categoría (opcional)</label>
+                        <div style="display:flex; gap:8px;">
+                            <input type="text" id="nueva-categoria" placeholder="Nombre de la categoría">
+                            <button onclick="agregarCategoria()">Agregar</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="botones-form">
+                    <button onclick="guardarProducto()">Guardar</button>
+                    <button class="btn-cancelar" onclick="cerrarFormProducto()">Cancelar</button>
+                </div>
+            </div>
+            <table id="tabla-productos">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Categoría</th>
+                        <th>Precio venta</th>
+                        <th>Stock mínimo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-productos"></tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <div id="inventario" class="modulo">
+            <h2>Inventario</h2>
+            <div id="alertas-inventario" style="margin-bottom:20px;"></div>
+            <div class="pestanas">
+                <button class="pestana activa" onclick="cambiarPestanaInventario('tab-stock', this)">Stock actual</button>
+                <button class="pestana" onclick="cambiarPestanaInventario('tab-lotes', this)">Lotes</button>
+            </div>
+            <div id="tab-stock" class="tab-contenido">
+                <div class="barra-acciones">
+                    <input type="text" id="buscador-inventario" placeholder="Buscar producto..." onkeyup="filtrarInventario()">
+                </div>
+                <table id="tabla-inventario">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th>Categoría</th>
+                            <th>Precio venta</th>
+                            <th>Stock mínimo</th>
+                            <th>Stock actual</th>
+                            <th>Estado</th>
+                            <th>Lotes</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-inventario"></tbody>
+                </table>
+            </div>
+            <div id="tab-lotes" class="tab-contenido" style="display:none;">
+                <p id="lotes-placeholder" style="color:#888; margin-bottom:15px;">Selecciona un producto desde la pestaña de stock para ver sus lotes.</p>
+                <h3 id="titulo-lotes" style="display:none; color:#1a6b4a; margin-bottom:15px;"></h3>
+                <table id="tabla-lotes" style="display:none;">
+                    <thead>
+                        <tr>
+                            <th>Lote</th>
+                            <th>Fecha entrada</th>
+                            <th>Fecha vencimiento</th>
+                            <th>Cantidad inicial</th>
+                            <th>Vendido</th>
+                            <th>Disponible</th>
+                            <th>Precio compra</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-lotes"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="ventas" class="modulo">
+            <h2>Ventas</h2>
+            <div class="pestanas">
+                <button class="pestana activa" onclick="cambiarPestanaVentas('tab-nueva-venta', this)">Nueva venta</button>
+                <button class="pestana" onclick="cambiarPestanaVentas('tab-historial-ventas', this)">Historial</button>
+            </div>
+            <div id="tab-nueva-venta" class="tab-contenido">
+                <div class="formulario">
+                    <h3>Datos del cliente</h3>
+                    <div class="fila-form">
+                        <div>
+                            <label>Buscar cliente por cédula</label>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="venta-cedula" placeholder="Número de cédula">
+                                <button onclick="buscarClienteVenta()">Buscar</button>
+                            </div>
+                        </div>
+                        <div id="info-cliente-venta" style="display:none;">
+                            <label>Cliente encontrado</label>
+                            <div style="background:#f0faf5; padding:10px; border-radius:6px; font-size:14px;">
+                                <strong id="venta-cliente-nombre"></strong><br>
+                                <span id="venta-cliente-puntos"></span>
+                            </div>
+                        </div>
+                    </div>
+                    <input type="hidden" id="venta-id-cliente">
+                    <input type="hidden" id="venta-puntos-disponibles" value="0">
+                    <h3 style="margin-top:20px;">Productos</h3>
+                    <div class="fila-form">
+                        <div>
+                            <label>Producto</label>
+                            <select id="venta-producto">
+                                <option value="">Selecciona un producto</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Cantidad</label>
+                            <input type="number" id="venta-cantidad" placeholder="0" min="1">
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="agregarItemVenta()">+ Agregar producto</button>
+                    </div>
+                    <table id="tabla-items-venta" style="margin-top:15px;">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio unitario</th>
+                                <th>Subtotal</th>
+                                <th>Quitar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-items-venta"></tbody>
+                    </table>
+                    <div style="margin-top:15px; background:#f9f9f9; padding:15px; border-radius:8px;">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+                            <span>Subtotal:</span>
+                            <strong>$<span id="subtotal-venta">0</span></strong>
+                        </div>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                            <label>Redimir puntos:</label>
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <input type="number" id="puntos-redimir" placeholder="0" min="0" style="width:100px;" oninput="calcularTotalVenta()">
+                                <span style="font-size:13px; color:#888;">(1 punto = $100)</span>
+                            </div>
+                        </div>
+                        <div style="display:flex; justify-content:space-between;">
+                            <span>Total a pagar:</span>
+                            <strong style="font-size:18px; color:#1a6b4a;">$<span id="total-venta">0</span></strong>
+                        </div>
+                    </div>
+                    <div class="botones-form" style="margin-top:15px;">
+                        <button onclick="confirmarVenta()">Confirmar venta</button>
+                        <button class="btn-cancelar" onclick="limpiarVenta()">Limpiar</button>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-historial-ventas" class="tab-contenido" style="display:none;">
+                <div class="formulario" style="margin-bottom:20px;">
+                    <h3>Filtros</h3>
+                    <div class="fila-form">
+                        <div>
+                            <label>Fecha desde</label>
+                            <input type="date" id="filtro-venta-desde">
+                        </div>
+                        <div>
+                            <label>Fecha hasta</label>
+                            <input type="date" id="filtro-venta-hasta">
+                        </div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Cliente</label>
+                            <select id="filtro-venta-cliente">
+                                <option value="">Todos los clientes</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Producto</label>
+                            <select id="filtro-venta-producto">
+                                <option value="">Todos los productos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="filtrarHistorialVentas()">Filtrar</button>
+                        <button class="btn-cancelar" onclick="limpiarFiltrosVentas()">Limpiar</button>
+                    </div>
+                </div>
+                <table id="tabla-historial-ventas">
+                    <thead>
+                        <tr>
+                            <th>No. Factura</th>
+                            <th>Fecha</th>
+                            <th>Cliente</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-historial-ventas"></tbody>
+                </table>
+                <div id="modal-modificar-venta" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+                    <div style="background:white; width:400px; margin:100px auto; border-radius:10px; padding:30px;">
+                        <h3 style="color:#1a6b4a; margin-bottom:20px;">Modificar cliente de la venta</h3>
+                        <input type="hidden" id="modificar-id-venta">
+                        <label style="font-size:13px; color:#555;">Buscar cliente por cédula</label>
+                        <div style="display:flex; gap:8px; margin-top:5px;">
+                            <input type="text" id="modificar-cedula-venta" placeholder="Cédula del cliente">
+                            <button onclick="buscarClienteModificar()">Buscar</button>
+                        </div>
+                        <div id="modificar-info-cliente" style="display:none; margin-top:10px; background:#f0faf5; padding:10px; border-radius:6px; font-size:14px;">
+                            <strong id="modificar-nombre-cliente"></strong>
+                        </div>
+                        <input type="hidden" id="modificar-id-cliente-nuevo">
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button onclick="guardarModificacionVenta()">Guardar</button>
+                            <button class="btn-cancelar" onclick="cerrarModalModificarVenta()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if session['rol'] == 1 %}
+        <div id="compras" class="modulo">
+            <h2>Compras</h2>
+            <div class="pestanas">
+                <button class="pestana activa" onclick="cambiarPestana('tab-compras', this)">Registrar compra</button>
+                <button class="pestana" onclick="cambiarPestana('tab-historial-compras', this)">Historial</button>
+                <button class="pestana" onclick="cambiarPestana('tab-proveedores', this)">Proveedores</button>
+            </div>
+            <div id="tab-compras" class="tab-contenido">
+                <div class="formulario">
+                    <h3>Nueva compra</h3>
+                    <div class="fila-form">
+                        <div>
+                            <label>Proveedor</label>
+                            <select id="compra-proveedor">
+                                <option value="">Selecciona un proveedor</option>
+                            </select>
+                        </div>
+                    </div>
+                    <h4 style="margin-bottom:10px; color:#1a6b4a;">Productos</h4>
+                    <div class="fila-form">
+                        <div>
+                            <label>Producto</label>
+                            <select id="compra-producto">
+                                <option value="">Selecciona un producto</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Cantidad</label>
+                            <input type="number" id="compra-cantidad" placeholder="0">
+                        </div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Precio de compra unitario</label>
+                            <input type="number" id="compra-precio" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label>Fecha de vencimiento</label>
+                            <input type="date" id="compra-vencimiento">
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="agregarItemCompra()">+ Agregar producto</button>
+                    </div>
+                    <table id="tabla-items-compra" style="margin-top:15px;">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Cantidad</th>
+                                <th>Precio compra</th>
+                                <th>Vencimiento</th>
+                                <th>Subtotal</th>
+                                <th>Quitar</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-items-compra"></tbody>
+                    </table>
+                    <div style="text-align:right; margin-top:10px;">
+                        <strong>Total: $<span id="total-compra">0</span></strong>
+                    </div>
+                    <div class="botones-form" style="margin-top:10px;">
+                        <button onclick="guardarCompra()">Confirmar compra</button>
+                        <button class="btn-cancelar" onclick="limpiarCompra()">Limpiar</button>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-historial-compras" class="tab-contenido" style="display:none;">
+                <div class="formulario" style="margin-bottom:20px;">
+                    <h3>Filtros</h3>
+                    <div class="fila-form">
+                        <div>
+                            <label>Fecha desde</label>
+                            <input type="date" id="filtro-compra-desde">
+                        </div>
+                        <div>
+                            <label>Fecha hasta</label>
+                            <input type="date" id="filtro-compra-hasta">
+                        </div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Proveedor</label>
+                            <select id="filtro-compra-proveedor">
+                                <option value="">Todos los proveedores</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>Producto</label>
+                            <select id="filtro-compra-producto">
+                                <option value="">Todos los productos</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="filtrarHistorialCompras()">Filtrar</button>
+                        <button class="btn-cancelar" onclick="limpiarFiltrosCompras()">Limpiar</button>
+                    </div>
+                </div>
+                <table id="tabla-historial-compras">
+                    <thead>
+                        <tr>
+                            <th>No. Orden</th>
+                            <th>Fecha</th>
+                            <th>Proveedor</th>
+                            <th>Productos</th>
+                            <th>Total</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-historial-compras"></tbody>
+                </table>
+                <div id="modal-modificar-compra" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
+                    <div style="background:white; width:500px; margin:60px auto; border-radius:10px; padding:30px; max-height:80vh; overflow-y:auto;">
+                        <h3 style="color:#1a6b4a; margin-bottom:20px;">Modificar compra</h3>
+                        <input type="hidden" id="modificar-id-compra">
+                        <label style="font-size:13px; color:#555;">Proveedor</label>
+                        <select id="modificar-proveedor-compra" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-top:5px; margin-bottom:15px;">
+                            <option value="">Selecciona un proveedor</option>
+                        </select>
+                        <h4 style="color:#1a6b4a; margin-bottom:10px;">Fechas de vencimiento</h4>
+                        <div id="modificar-lotes-compra"></div>
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button onclick="guardarModificacionCompra()">Guardar</button>
+                            <button class="btn-cancelar" onclick="cerrarModalModificarCompra()">Cancelar</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="tab-proveedores" class="tab-contenido" style="display:none;">
+                <div class="barra-acciones">
+                    <input type="text" id="buscador-proveedores" placeholder="Buscar proveedor..." onkeyup="filtrarProveedores()">
+                    <button onclick="abrirFormProveedor()">+ Agregar proveedor</button>
+                </div>
+                <div id="form-proveedor" class="formulario" style="display:none;">
+                    <h3 id="titulo-form-proveedor">Agregar proveedor</h3>
+                    <input type="hidden" id="proveedor-id">
+                    <div class="fila-form">
+                        <div>
+                            <label>Nombre</label>
+                            <input type="text" id="proveedor-nombre" placeholder="Nombre del proveedor">
+                        </div>
+                        <div>
+                            <label>Teléfono</label>
+                            <input type="text" id="proveedor-telefono" placeholder="Teléfono">
+                        </div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Dirección</label>
+                            <input type="text" id="proveedor-direccion" placeholder="Dirección">
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="guardarProveedor()">Guardar</button>
+                        <button class="btn-cancelar" onclick="cerrarFormProveedor()">Cancelar</button>
+                    </div>
+                </div>
+                <table id="tabla-proveedores">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-proveedores"></tbody>
+                </table>
+                <div id="panel-productos-proveedor" class="formulario" style="display:none; margin-top:20px;">
+                    <h3 id="titulo-productos-proveedor">Productos del proveedor</h3>
+                    <div class="fila-form">
+                        <div>
+                            <label>Asignar producto</label>
+                            <div style="display:flex; gap:8px;">
+                                <select id="select-producto-proveedor">
+                                    <option value="">Selecciona un producto</option>
+                                </select>
+                                <button onclick="asignarProductoProveedor()">Asignar</button>
+                            </div>
+                        </div>
+                    </div>
+                    <table id="tabla-productos-proveedor" style="margin-top:15px;">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cuerpo-productos-proveedor"></tbody>
+                    </table>
+                    <div class="botones-form" style="margin-top:10px;">
+                        <button class="btn-cancelar" onclick="cerrarPanelProductosProveedor()">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="usuarios" class="modulo">
+            <h2>Usuarios</h2>
+            <div class="pestanas">
+                <button class="pestana activa" onclick="cambiarPestanaUsuarios('tab-lista-usuarios', this)">Usuarios</button>
+                <button class="pestana" onclick="cambiarPestanaUsuarios('tab-perfil', this)">Mi perfil</button>
+            </div>
+            <div id="tab-lista-usuarios" class="tab-contenido">
+                <div class="barra-acciones">
+                    <input type="text" id="buscador-usuarios" placeholder="Buscar usuario..." onkeyup="filtrarUsuarios()">
+                    <button onclick="abrirFormUsuario()">+ Agregar usuario</button>
+                </div>
+                <div id="form-usuario" class="formulario" style="display:none;">
+                    <h3 id="titulo-form-usuario">Agregar usuario</h3>
+                    <input type="hidden" id="usuario-id">
+                    <div class="fila-form">
+                        <div>
+                            <label>Nombre completo</label>
+                            <input type="text" id="usuario-nombre" placeholder="Nombre del usuario">
+                        </div>
+                        <div>
+                            <label>Usuario</label>
+                            <input type="text" id="usuario-usuario" placeholder="Nombre de usuario">
+                        </div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Contraseña</label>
+                            <input type="password" id="usuario-contraseña" placeholder="Contraseña">
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="guardarUsuario()">Guardar</button>
+                        <button class="btn-cancelar" onclick="cerrarFormUsuario()">Cancelar</button>
+                    </div>
+                </div>
+                <table id="tabla-usuarios">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Usuario</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cuerpo-usuarios"></tbody>
+                </table>
+            </div>
+            <div id="tab-perfil" class="tab-contenido" style="display:none;">
+                <div class="formulario">
+                    <h3>Mi perfil</h3>
+                    <input type="hidden" id="perfil-id">
+                    <div class="fila-form">
+                        <div>
+                            <label>Nombre completo</label>
+                            <input type="text" id="perfil-nombre" placeholder="Tu nombre">
+                        </div>
+                        <div>
+                            <label>Usuario</label>
+                            <input type="text" id="perfil-usuario" placeholder="Tu usuario">
+                        </div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Nueva contraseña</label>
+                            <input type="password" id="perfil-contraseña" placeholder="Nueva contraseña">
+                        </div>
+                        <div>
+                            <label>Confirmar contraseña</label>
+                            <input type="password" id="perfil-confirmar" placeholder="Confirmar contraseña">
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="guardarPerfil()">Guardar cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+        <div id="reportes" class="modulo">
+            <h2>Reportes</h2>
+            <div class="pestanas">
+                <button class="pestana activa" onclick="cambiarPestanaReportes('tab-reporte-ejecutivo', this)">Ejecutivo</button>
+                <button class="pestana" onclick="cambiarPestanaReportes('tab-reporte-ventas', this)">Ventas</button>
+                <button class="pestana" onclick="cambiarPestanaReportes('tab-reporte-inventario', this)">Inventario</button>
+                <button class="pestana" onclick="cambiarPestanaReportes('tab-reporte-rentabilidad', this)">Rentabilidad</button>
+            </div>
+
+            <div id="tab-reporte-ejecutivo" class="tab-contenido">
+                <div class="formulario">
+                    <h3>Filtros</h3>
+                    <div class="atajos-fecha">
+                        <button type="button" onclick="aplicarRangoEjecutivo('hoy')">Hoy</button>
+                        <button type="button" onclick="aplicarRangoEjecutivo('semana')">Semana</button>
+                        <button type="button" onclick="aplicarRangoEjecutivo('mes')">Mes</button>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Fecha desde</label>
+                            <input type="date" id="reporte-ejecutivo-desde">
+                        </div>
+                        <div>
+                            <label>Fecha hasta</label>
+                            <input type="date" id="reporte-ejecutivo-hasta">
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="cargarReporteEjecutivo()">Actualizar</button>
+                        <button class="btn-cancelar" onclick="limpiarFiltrosReporteEjecutivo()">Limpiar filtros</button>
+                    </div>
+                </div>
+                <div class="grid-reportes-kpis">
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Ventas</span><span class="tarjeta-valor" id="rep-ej-ventas">$0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Compras</span><span class="tarjeta-valor" id="rep-ej-compras">$0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Utilidad estimada</span><span class="tarjeta-valor" id="rep-ej-utilidad">$0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Ticket promedio</span><span class="tarjeta-valor" id="rep-ej-ticket">$0</span></div>
+                </div>
+                <div class="grid-reportes-graficas">
+                    <div class="formulario">
+                        <h3>Ventas últimos 7 días</h3>
+                        <canvas id="grafico-reporte-ejecutivo" height="110"></canvas>
+                    </div>
+                    <div class="formulario">
+                        <h3>Top productos</h3>
+                        <table id="tabla-reporte-ejecutivo-top">
+                            <thead><tr><th>Producto</th><th>Unidades</th></tr></thead>
+                            <tbody id="rep-ej-top-productos"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-reporte-ventas" class="tab-contenido" style="display:none;">
+                <div class="formulario">
+                    <h3>Filtros</h3>
+                    <div class="atajos-fecha">
+                        <button type="button" onclick="aplicarRangoVentasReporte('hoy')">Hoy</button>
+                        <button type="button" onclick="aplicarRangoVentasReporte('semana')">Semana</button>
+                        <button type="button" onclick="aplicarRangoVentasReporte('mes')">Mes</button>
+                    </div>
+                    <div class="fila-form">
+                        <div><label>Fecha desde</label><input type="date" id="rep-ventas-desde"></div>
+                        <div><label>Fecha hasta</label><input type="date" id="rep-ventas-hasta"></div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Cliente</label>
+                            <select id="rep-ventas-cliente"><option value="">Todos</option></select>
+                        </div>
+                        <div>
+                            <label>Producto</label>
+                            <select id="rep-ventas-producto"><option value="">Todos</option></select>
+                        </div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label>Categoría</label>
+                            <select id="rep-ventas-categoria"><option value="">Todas</option></select>
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="cargarReporteVentas()">Actualizar</button>
+                        <button class="btn-cancelar" onclick="limpiarFiltrosReporteVentas()">Limpiar filtros</button>
+                    </div>
+                </div>
+                <div class="grid-reportes-kpis">
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Facturas</span><span class="tarjeta-valor" id="rep-ventas-facturas">0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Monto total</span><span class="tarjeta-valor" id="rep-ventas-monto">$0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Ticket promedio</span><span class="tarjeta-valor" id="rep-ventas-ticket">$0</span></div>
+                </div>
+                <div class="formulario">
+                    <h3>Serie diaria</h3>
+                    <canvas id="grafico-reporte-ventas" height="110"></canvas>
+                </div>
+                <table id="tabla-reporte-ventas-detalle">
+                    <thead>
+                        <tr><th>Factura</th><th>Fecha</th><th>Cliente</th><th>Vendedor</th><th>Total</th></tr>
+                    </thead>
+                    <tbody id="rep-ventas-detalle"></tbody>
+                </table>
+            </div>
+
+            <div id="tab-reporte-inventario" class="tab-contenido" style="display:none;">
+                <div class="formulario">
+                    <h3>Filtros</h3>
+                    <div class="fila-form">
+                        <div><label>Categoría</label><select id="rep-inv-categoria"><option value="">Todas</option></select></div>
+                        <div><label>Proveedor</label><select id="rep-inv-proveedor"><option value="">Todos</option></select></div>
+                    </div>
+                    <div class="fila-form">
+                        <div>
+                            <label><input type="checkbox" id="rep-inv-alertas"> Solo alertas</label>
+                        </div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="cargarReporteInventario()">Actualizar</button>
+                        <button class="btn-cancelar" onclick="limpiarFiltrosReporteInventario()">Limpiar filtros</button>
+                    </div>
+                </div>
+                <div class="grid-reportes-kpis">
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Productos</span><span class="tarjeta-valor" id="rep-inv-productos">0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Bajo mínimo</span><span class="tarjeta-valor" id="rep-inv-bajo">0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Valor inventario</span><span class="tarjeta-valor" id="rep-inv-valor">$0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Por vencer (30d)</span><span class="tarjeta-valor" id="rep-inv-vencer">0</span></div>
+                </div>
+                <table id="tabla-reporte-inventario-detalle">
+                    <thead>
+                        <tr><th>Producto</th><th>Categoría</th><th>Stock</th><th>Mínimo</th><th>Valor costo</th></tr>
+                    </thead>
+                    <tbody id="rep-inv-detalle"></tbody>
+                </table>
+            </div>
+
+            <div id="tab-reporte-rentabilidad" class="tab-contenido" style="display:none;">
+                <div class="formulario">
+                    <h3>Filtros</h3>
+                    <div class="atajos-fecha">
+                        <button type="button" onclick="aplicarRangoRentabilidad('hoy')">Hoy</button>
+                        <button type="button" onclick="aplicarRangoRentabilidad('semana')">Semana</button>
+                        <button type="button" onclick="aplicarRangoRentabilidad('mes')">Mes</button>
+                    </div>
+                    <div class="fila-form">
+                        <div><label>Fecha desde</label><input type="date" id="rep-ren-desde"></div>
+                        <div><label>Fecha hasta</label><input type="date" id="rep-ren-hasta"></div>
+                    </div>
+                    <div class="fila-form">
+                        <div><label>Categoría</label><select id="rep-ren-categoria"><option value="">Todas</option></select></div>
+                        <div><label>Producto</label><select id="rep-ren-producto"><option value="">Todos</option></select></div>
+                    </div>
+                    <div class="botones-form">
+                        <button onclick="cargarReporteRentabilidad()">Actualizar</button>
+                        <button class="btn-cancelar" onclick="limpiarFiltrosReporteRentabilidad()">Limpiar filtros</button>
+                    </div>
+                </div>
+                <div class="grid-reportes-kpis">
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Ingresos</span><span class="tarjeta-valor" id="rep-ren-ingresos">$0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Costos</span><span class="tarjeta-valor" id="rep-ren-costos">$0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Margen</span><span class="tarjeta-valor" id="rep-ren-margen">$0</span></div>
+                    <div class="tarjeta-resumen"><span class="tarjeta-label">Margen %</span><span class="tarjeta-valor" id="rep-ren-margen-pct">0%</span></div>
+                </div>
+                <table id="tabla-reporte-rentabilidad-detalle">
+                    <thead>
+                        <tr><th>Producto</th><th>Categoría</th><th>Unidades</th><th>Ingresos</th><th>Costo</th><th>Margen</th><th>Margen %</th></tr>
+                    </thead>
+                    <tbody id="rep-ren-detalle"></tbody>
+                </table>
+            </div>
+        </div>
+        <div id="clientes" class="modulo">
+            <h2>Clientes</h2>
+            <div class="barra-acciones">
+                <input type="text" id="buscador-clientes" placeholder="Buscar cliente..." onkeyup="filtrarClientes()">
+                <button onclick="abrirFormCliente()">+ Agregar cliente</button>
+            </div>
+            <div id="form-cliente" class="formulario" style="display:none;">
+                <h3 id="titulo-form-cliente">Agregar cliente</h3>
+                <input type="hidden" id="cliente-id">
+                <div class="fila-form">
+                    <div>
+                        <label>Nombre completo</label>
+                        <input type="text" id="cliente-nombre" placeholder="Nombre del cliente">
+                    </div>
+                    <div>
+                        <label>Cédula</label>
+                        <input type="number" id="cliente-cedula" placeholder="Número de cédula" min="10000000" max="9999999999">
+                    </div>
+                </div>
+                <div class="fila-form">
+                    <div>
+                        <label>Contacto</label>
+                        <input type="text" id="cliente-contacto" placeholder="Teléfono o correo">
+                    </div>
+                </div>
+                <div class="botones-form">
+                    <button onclick="guardarCliente()">Guardar</button>
+                    <button class="btn-cancelar" onclick="cerrarFormCliente()">Cancelar</button>
+                </div>
+            </div>
+            <table id="tabla-clientes">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Cédula</th>
+                        <th>Contacto</th>
+                        <th>Puntos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="cuerpo-clientes"></tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+<!-- Factura de venta -->
+<div id="modal-factura-venta" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+    <div style="background:white; width:600px; margin:40px auto; border-radius:10px; padding:40px;">
+        <div style="text-align:center; margin-bottom:20px; border-bottom:2px solid #1a6b4a; padding-bottom:15px;">
+            <h1 style="color:#1a6b4a; font-size:28px; margin-bottom:5px;">FarmaVida</h1>
+            <p style="color:#888; font-size:13px;">Droguería y Farmacia</p>
+            <h3 style="margin-top:10px;">Factura de Venta</h3>
+            <p style="font-size:13px;">No. <strong id="factura-numero"></strong></p>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; font-size:14px;">
+            <div>
+                <p><strong>Cliente:</strong> <span id="factura-cliente-nombre"></span></p>
+                <p><strong>Cédula:</strong> <span id="factura-cliente-cedula"></span></p>
+                <p><strong>Contacto:</strong> <span id="factura-cliente-contacto"></span></p>
+            </div>
+            <div>
+                <p><strong>Fecha:</strong> <span id="factura-fecha"></span></p>
+                <p><strong>Atendido por:</strong> <span id="factura-usuario"></span></p>
+                <p><strong>Puntos ganados:</strong> <span id="factura-puntos-ganados"></span></p>
+            </div>
+        </div>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:15px; font-size:13px;">
+            <thead>
+                <tr style="background:#1a6b4a; color:white;">
+                    <th style="padding:8px;">Producto</th>
+                    <th style="padding:8px; text-align:center;">Cantidad</th>
+                    <th style="padding:8px; text-align:right;">Precio unit.</th>
+                    <th style="padding:8px; text-align:right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="factura-items"></tbody>
+        </table>
+        <div style="text-align:right; font-size:14px;">
+            <p id="factura-descuento-row" style="display:none;"><strong>Descuento por puntos:</strong> -$<span id="factura-descuento"></span></p>
+            <p style="font-size:18px; color:#1a6b4a;"><strong>Total: $<span id="factura-total"></span></strong></p>
+        </div>
+        <div id="factura-puntos-info" style="background:#f0faf5; padding:10px; border-radius:6px; font-size:13px; margin-top:15px;">
+            <p><strong>Puntos antes:</strong> <span id="factura-puntos-antes"></span></p>
+            <p><strong>Puntos redimidos:</strong> <span id="factura-puntos-redimidos"></span></p>
+            <p><strong>Puntos actuales:</strong> <span id="factura-puntos-despues"></span></p>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px; justify-content:center;">
+            <button onclick="imprimirFactura('factura-venta')" style="padding:10px 24px; background:#1a6b4a; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">Imprimir</button>
+            <button onclick="cerrarFactura('modal-factura-venta')" style="padding:10px 24px; background:#888; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">Cerrar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Factura de compra -->
+<div id="modal-factura-compra" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+    <div style="background:white; width:600px; margin:40px auto; border-radius:10px; padding:40px;">
+        <div style="text-align:center; margin-bottom:20px; border-bottom:2px solid #1a6b4a; padding-bottom:15px;">
+            <h1 style="color:#1a6b4a; font-size:28px; margin-bottom:5px;">FarmaVida</h1>
+            <p style="color:#888; font-size:13px;">Droguería y Farmacia</p>
+            <h3 style="margin-top:10px;">Orden de Compra</h3>
+            <p style="font-size:13px;">No. <strong id="orden-numero"></strong></p>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; font-size:14px;">
+            <div>
+                <p><strong>Proveedor:</strong> <span id="orden-proveedor-nombre"></span></p>
+                <p><strong>Teléfono:</strong> <span id="orden-proveedor-telefono"></span></p>
+                <p><strong>Dirección:</strong> <span id="orden-proveedor-direccion"></span></p>
+            </div>
+            <div>
+                <p><strong>Fecha:</strong> <span id="orden-fecha"></span></p>
+                <p><strong>Registrado por:</strong> <span id="orden-usuario"></span></p>
+            </div>
+        </div>
+        <table style="width:100%; border-collapse:collapse; margin-bottom:15px; font-size:13px;">
+            <thead>
+                <tr style="background:#1a6b4a; color:white;">
+                    <th style="padding:8px;">Producto</th>
+                    <th style="padding:8px; text-align:center;">Cantidad</th>
+                    <th style="padding:8px; text-align:right;">Precio unit.</th>
+                    <th style="padding:8px; text-align:right;">Vencimiento</th>
+                    <th style="padding:8px; text-align:right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="orden-items"></tbody>
+        </table>
+        <div style="text-align:right; font-size:14px;">
+            <p style="font-size:18px; color:#1a6b4a;"><strong>Total: $<span id="orden-total"></span></strong></p>
+        </div>
+        <div style="display:flex; gap:10px; margin-top:20px; justify-content:center;">
+            <button onclick="imprimirFactura('factura-compra')" style="padding:10px 24px; background:#1a6b4a; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">Imprimir</button>
+            <button onclick="cerrarFactura('modal-factura-compra')" style="padding:10px 24px; background:#888; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">Cerrar</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
