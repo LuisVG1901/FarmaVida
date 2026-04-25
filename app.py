@@ -60,6 +60,18 @@ def inicializar_bd():
                 fecha_vencimiento DATE NOT NULL,
                 FOREIGN KEY (id_producto) REFERENCES productos(id)
             )""",
+            """CREATE TABLE IF NOT EXISTS consecutivos (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                tipo VARCHAR(50) NOT NULL,
+                ultimo_numero INT DEFAULT 0
+            )""",
+            """CREATE TABLE IF NOT EXISTS proveedor_productos (
+                id INT PRIMARY KEY AUTO_INCREMENT,
+                id_proveedor INT,
+                id_producto INT,
+                FOREIGN KEY (id_proveedor) REFERENCES proveedores(id),
+                FOREIGN KEY (id_producto) REFERENCES productos(id)
+            )""",
             """CREATE TABLE IF NOT EXISTS compras (
                 id INT PRIMARY KEY AUTO_INCREMENT,
                 id_usuario INT,
@@ -100,20 +112,8 @@ def inicializar_bd():
                 precio_unitario DECIMAL(10,2) NOT NULL,
                 FOREIGN KEY (id_venta) REFERENCES ventas(id),
                 FOREIGN KEY (id_lote) REFERENCES lotes(id)
-            )""",
-            """CREATE TABLE IF NOT EXISTS consecutivos (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                tipo VARCHAR(50) NOT NULL,
-                ultimo_numero INT DEFAULT 0
-            )""",
-            """CREATE TABLE IF NOT EXISTS proveedor_productos (
-                id INT PRIMARY KEY AUTO_INCREMENT,
-                id_proveedor INT,
-                id_producto INT,
-                FOREIGN KEY (id_proveedor) REFERENCES proveedores(id),
-                FOREIGN KEY (id_producto) REFERENCES productos(id)
             )"""
-        ]
+]    
 
         for comando in comandos:
             cursor.execute(comando)
