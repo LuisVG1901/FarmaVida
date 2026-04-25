@@ -152,7 +152,7 @@ def login():
         contraseña = request.form["contraseña"]
         
         conexion = conectar()
-        cursor = conexion.cursor(dictionary=True)
+        cursor = conexion.cursor(dictionary=True, buffered =True)
         cursor.execute("""
         SELECT usuarios.*, roles.nombre AS nombre_rol 
         FROM usuarios 
