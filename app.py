@@ -457,8 +457,8 @@ def agregar_compra():
         return redirect(url_for("login"))
     data = request.get_json()
     conexion = conectar()
-    cursor = conexion.cursor(dictionary=True)
     try:
+        cursor = conexion.cursor(dictionary=True, buffered=True)
         cursor.execute("UPDATE consecutivos SET ultimo_numero = ultimo_numero + 1 WHERE tipo = 'compras'")
         cursor.execute("SELECT ultimo_numero FROM consecutivos WHERE tipo = 'compras'")
         numero_orden = cursor.fetchone()["ultimo_numero"]
@@ -488,8 +488,11 @@ def agregar_compra():
                 "subtotal": item["cantidad"] * item["precio_compra"]
             })
 
-        cursor.execute("SELECT * FROM proveedores WHERE id = %s", (data["id_proveedor"],))
-        proveedor = cursor.fetchone()
+        cursor2 = conexion.cursor(dictionary=True, buffered=True)
+        cursor2.execute("SELECT * FROM proveedores WHERE id = %s", (data["id_proveedor"],))
+        proveedor = cursor2.fetchone()
+        cursor2.close()
+        cursor.close()
 
         conexion.commit()
         conexion.close()
