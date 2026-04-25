@@ -737,8 +737,8 @@ def agregar_venta():
         return redirect(url_for("login"))
     data = request.get_json()
     conexion = conectar()
-    cursor = conexion.cursor(dictionary=True)
     try:
+        cursor = conexion.cursor(dictionary=True, buffered=True)
         cursor.execute("UPDATE consecutivos SET ultimo_numero = ultimo_numero + 1 WHERE tipo = 'ventas'")
         cursor.execute("SELECT ultimo_numero FROM consecutivos WHERE tipo = 'ventas'")
         numero_factura = cursor.fetchone()["ultimo_numero"]
@@ -749,7 +749,7 @@ def agregar_venta():
         puntos_ganados = int(float(data["total"]) / 1000)
 
         for item in data["items"]:
-            cursor2 = conexion.cursor(dictionary=True)
+            cursor2 = conexion.cursor(dictionary=True, buffered=True)
             cursor2.execute("""
                 SELECT COALESCE(SUM(lotes.cantidad), 0) - 
                      COALESCE((
@@ -758,12 +758,13 @@ def agregar_venta():
                         JOIN lotes l2 ON dv.id_lote = l2.id 
                         WHERE l2.id_producto = %s
                ), 0) AS stock_actual
-        FROM lotes
-        WHERE lotes.id_producto = %s
+                FROM lotes
+                WHERE lotes.id_producto = %s
             """, (item["id_producto"], item["id_producto"]))
             stock = cursor2.fetchone()["stock_actual"]
             cursor2.close()
             if stock < item["cantidad"]:
+                cursor.close()
                 conexion.close()
                 return {
                     "ok": False,
@@ -778,7 +779,8 @@ def agregar_venta():
 
         for item in data["items"]:
             cantidad_restante = item["cantidad"]
-            cursor.execute("""
+            cursor3 = conexion.cursor(dictionary=True, buffered=True)
+            cursor3.execute("""
                 SELECT lotes.id, 
                        lotes.cantidad - COALESCE(SUM(detalle_ventas.cantidad), 0) AS disponible
                 FROM lotes
@@ -788,7 +790,8 @@ def agregar_venta():
                 HAVING disponible > 0
                 ORDER BY lotes.fecha_vencimiento ASC
             """, (item["id_producto"],))
-            lotes = cursor.fetchall()
+            lotes = cursor3.fetchall()
+            cursor3.close()
 
             for lote in lotes:
                 if cantidad_restante <= 0:
@@ -805,8 +808,11 @@ def agregar_venta():
         if data.get("puntos_redimidos", 0) > 0:
             cursor.execute("UPDATE clientes SET puntos = puntos - %s WHERE id = %s", (data["puntos_redimidos"], data["id_cliente"]))
 
-        cursor.execute("SELECT * FROM clientes WHERE id = %s", (data["id_cliente"],))
-        cliente = cursor.fetchone()
+        cursor4 = conexion.cursor(dictionary=True, buffered=True)
+        cursor4.execute("SELECT * FROM clientes WHERE id = %s", (data["id_cliente"],))
+        cliente = cursor4.fetchone()
+        cursor4.close()
+        cursor.close()
 
         conexion.commit()
         conexion.close()
