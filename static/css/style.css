@@ -708,6 +708,20 @@ body.dark-mode textarea::placeholder {
      #btn-menu {
         display: block;
     }
+
+.topbar-global {
+    position: relative;
+    text-align: right;
+    padding: 10px 15px;
+    margin-bottom: 10px;
+}
+
+#btn-dark-mode {
+    width: auto;
+    font-size: 12px;
+    padding: 6px 12px;
+}    
+
     /* Sidebar en móvil */
 #sidebar {
     width: 100%;
