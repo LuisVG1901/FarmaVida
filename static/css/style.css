@@ -712,15 +712,16 @@ body.dark-mode textarea::placeholder {
 .topbar-global {
     position: relative;
     text-align: right;
-    padding: 10px 15px;
-    margin-bottom: 10px;
+    padding: 5px 15px;
+    margin-bottom: 5px;
+    margin-top: -5px;
 }
 
 #btn-dark-mode {
     width: auto;
     font-size: 12px;
     padding: 6px 12px;
-}    
+} 
 
     /* Sidebar en móvil */
 #sidebar {
