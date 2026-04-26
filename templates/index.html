@@ -33,12 +33,15 @@
         </div>
     </div>
 
-    <div id="bienvenida" style="margin-bottom:25px; display:flex; justify-content:space-between; align-items:center;">
-    <div>
-        <h2>Bienvenido, {{ session['nombre'] }}</h2>
+    <div id="contenido">
+        <div class="topbar-global">
+            <button id="btn-dark-mode" onclick="toggleDarkMode()" class="btn-dark-mode">Modo oscuro</button>
+        </div>
+
+        <div id="inicio" class="modulo">
+    <div id="bienvenida" style="margin-bottom:25px;">
+        <h2>Bienvenido(a), {{ session['nombre'] }}</h2>
         <p style="color:#888; font-size:14px;">{{ session['nombre_rol'] | capitalize }} — FarmaVida</p>
-    </div>
-    <button id="btn-dark-mode" onclick="toggleDarkMode()" class="btn-dark-mode">Modo oscuro</button>
     </div>
 
     <!-- Accesos rápidos -->
