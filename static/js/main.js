@@ -1426,12 +1426,12 @@ function guardarUsuario() {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.ok) {
-            cerrarFormUsuario();
-            cargarUsuarios();
-        } else {
+        if (data.ok === false) {
             alert(data.mensaje);
+            return;
         }
+        cerrarFormUsuario();
+        cargarUsuarios();
     });
 }
 
@@ -1455,50 +1455,48 @@ function filtrarUsuarios() {
 }
 
 function cargarPerfil() {
-    fetch('/usuarios/listar')
+    fetch('/usuarios/perfil')
         .then(res => res.json())
         .then(data => {
-            const usuarioActual = data.usuarios.find(u => u.usuario === document.getElementById('session-id-usuario').getAttribute('data-usuario'));
-            if (usuarioActual) {
-                document.getElementById('perfil-id').value = usuarioActual.id;
-                document.getElementById('perfil-nombre').value = usuarioActual.nombre;
-                document.getElementById('perfil-usuario').value = usuarioActual.usuario;
-            }
+            document.getElementById('perfil-id').value = data.id;
+            document.getElementById('perfil-nombre').value = data.nombre;
+            document.getElementById('perfil-usuario').value = data.usuario;
+            document.getElementById('perfil-contraseña').value = '';
+            document.getElementById('perfil-confirmar').value = '';
         });
 }
 
 function guardarPerfil() {
-    const contraseña = document.getElementById('perfil-contraseña').value;
-    const confirmar = document.getElementById('perfil-confirmar').value;
-
-    if (contraseña && contraseña !== confirmar) {
-        alert('Las contraseñas no coinciden.');
-        return;
-    }
-
     const data = {
         id: document.getElementById('perfil-id').value,
         nombre: document.getElementById('perfil-nombre').value,
         usuario: document.getElementById('perfil-usuario').value,
-        contraseña: contraseña || null
+        contraseña: document.getElementById('perfil-contraseña').value,
+        confirmar: document.getElementById('perfil-confirmar').value
     };
 
     if (!data.nombre || !data.usuario) {
-        alert('El nombre y el usuario son obligatorios.');
+        alert('Nombre y usuario son obligatorios.');
+        return;
+    }
+    if (data.contraseña && data.contraseña !== data.confirmar) {
+        alert('Las contraseñas no coinciden.');
         return;
     }
 
-    fetch('/usuarios/perfil', {
+    fetch('/usuarios/actualizar_perfil', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
     })
     .then(res => res.json())
-    .then(data => {
-        if (data.ok) {
-            alert('Perfil actualizado correctamente.');
+    .then(res => {
+        if (res.ok) {
+            alert('Perfil actualizado. Si cambiaste la contraseña, usa la nueva en tu próximo inicio de sesión.');
+            document.getElementById('perfil-contraseña').value = '';
+            document.getElementById('perfil-confirmar').value = '';
         } else {
-            alert('Error: ' + data.mensaje);
+            alert('Error: ' + res.mensaje);
         }
     });
 }
@@ -1938,4 +1936,23 @@ function cargarReporteRentabilidad() {
                 cuerpo.innerHTML = '<tr><td colspan="7" style="text-align:center; color:#888;">Sin resultados</td></tr>';
             }
         });
+}
+
+// =================== EXPORTAR EXCEL ===================
+function exportarExcel(idTabla, nombreArchivo) {
+    const tabla = document.getElementById(idTabla);
+    if (!tabla) {
+        alert('No se encontró la tabla para exportar.');
+        return;
+    }
+    
+    // Crear un libro de trabajo y una hoja a partir de la tabla HTML
+    const wb = XLSX.utils.table_to_book(tabla, { sheet: "Reporte" });
+    
+    // Generar la fecha actual para el nombre del archivo
+    const fecha = new Date().toISOString().split('T')[0];
+    const nombreFinal = `${nombreArchivo}_${fecha}.xlsx`;
+    
+    // Descargar el archivo
+    XLSX.writeFile(wb, nombreFinal);
 }

@@ -368,6 +368,14 @@ h2 {
     background-color: #666 !important;
 }
 
+.btn-exportar {
+    background-color: #107c41 !important; /* Excel green */
+}
+
+.btn-exportar:hover {
+    background-color: #0c5e31 !important;
+}
+
 /* Tabla */
 table {
     width: 100%;
