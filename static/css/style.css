@@ -503,6 +503,16 @@ body.dark-mode .pestana:hover {
     font-weight: 600;
 }
 
+body.dark-mode .badge-ok {
+    background-color: #064e3b;
+    color: #86efac !important;
+}
+
+body.dark-mode .badge-bajo {
+    background-color: #7f1d1d;
+    color: #fca5a5 !important;
+}
+
 .btn-ver-lotes {
     padding: 6px 12px;
     background-color: var(--primary);
