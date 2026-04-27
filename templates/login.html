@@ -8,7 +8,7 @@
 </head>
 <body class="login-body">
     <div class="login-topbar">
-        <button id="btn-dark-mode-login" type="button" class="btn-dark-mode" onclick="toggleDarkModeLogin()">🌙 Modo oscuro</button>
+        <button id="btn-dark-mode-login" type="button" class="btn-dark-mode" onclick="toggleDarkModeLogin()">🌙</button>
     </div>
 
     <div class="login-container">
@@ -34,7 +34,7 @@
             const btn = document.getElementById('btn-dark-mode-login');
             if (!btn) return;
             const esOscuro = document.body.classList.contains('dark-mode');
-            btn.textContent = esOscuro ? '☀️ Modo claro' : '🌙 Modo oscuro';
+            btn.textContent = esOscuro ? '☀️' : '🌙';
         }
 
         function inicializarTemaLogin() {

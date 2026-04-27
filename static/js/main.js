@@ -76,7 +76,7 @@ function actualizarTextoBotonTema() {
     const btn = document.getElementById('btn-dark-mode');
     if (!btn) return;
     const esOscuro = document.body.classList.contains('dark-mode');
-    btn.textContent = esOscuro ? '☀️ Modo claro' : '🌙 Modo oscuro';
+    btn.textContent = esOscuro ? '☀️' : '🌙';
 }
 
 // =================== PRODUCTOS ===================
