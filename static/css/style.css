@@ -759,6 +759,15 @@ body.dark-mode textarea::placeholder {
     color: var(--text-muted);
 }
 
+/* Fix para el autocompletado del navegador en modo oscuro */
+body.dark-mode input:-webkit-autofill,
+body.dark-mode input:-webkit-autofill:hover, 
+body.dark-mode input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--text) !important;
+    -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+
 #btn-menu {
     display: none;
 }
