@@ -899,7 +899,52 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 <!-- Factura de venta -->
-<div id="modal-factura-venta" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+<div id="modal-factura-venta" class="invoice-modal">
+    <div class="invoice-content">
+        <div class="invoice-header">
+            <h1>FarmaVida</h1>
+            <p>Droguería y Farmacia</p>
+            <h3>Factura de Venta</h3>
+            <p>No. <strong id="factura-numero"></strong></p>
+        </div>
+        <div class="invoice-info-grid">
+            <div>
+                <p><strong>Cliente:</strong> <span id="factura-cliente-nombre"></span></p>
+                <p><strong>Cédula:</strong> <span id="factura-cliente-cedula"></span></p>
+                <p><strong>Contacto:</strong> <span id="factura-cliente-contacto"></span></p>
+            </div>
+            <div>
+                <p><strong>Fecha:</strong> <span id="factura-fecha"></span></p>
+                <p><strong>Atendido por:</strong> <span id="factura-usuario"></span></p>
+                <p><strong>Puntos ganados:</strong> <span id="factura-puntos-ganados"></span></p>
+            </div>
+        </div>
+        <table class="invoice-table">
+            <thead>
+                <tr>
+                    <th>Producto</th>
+                    <th style="text-align:center;">Cantidad</th>
+                    <th style="text-align:right;">Precio unit.</th>
+                    <th style="text-align:right;">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody id="factura-items"></tbody>
+        </table>
+        <div class="invoice-total">
+            <p id="factura-descuento-row" style="display:none;"><strong>Descuento por puntos:</strong> -$<span id="factura-descuento"></span></p>
+            <p style="font-size:18px; color:var(--primary);"><strong>Total: $<span id="factura-total"></span></strong></p>
+        </div>
+        <div class="invoice-puntos-info">
+            <p><strong>Puntos antes:</strong> <span id="factura-puntos-antes"></span></p>
+            <p><strong>Puntos redimidos:</strong> <span id="factura-puntos-redimidos"></span></p>
+            <p><strong>Puntos actuales:</strong> <span id="factura-puntos-despues"></span></p>
+        </div>
+        <div class="invoice-actions">
+            <button onclick="imprimirFactura('factura-venta')">Imprimir</button>
+            <button onclick="cerrarFactura('modal-factura-venta')">Cerrar</button>
+        </div>
+    </div>
+</div>
     <div style="background:white; width:600px; margin:40px auto; border-radius:10px; padding:40px;">
         <div style="text-align:center; margin-bottom:20px; border-bottom:2px solid #1a6b4a; padding-bottom:15px;">
             <h1 style="color:#1a6b4a; font-size:28px; margin-bottom:5px;">FarmaVida</h1>
@@ -947,15 +992,15 @@
 </div>
 
 <!-- Factura de compra -->
-<div id="modal-factura-compra" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
-    <div style="background:white; width:600px; margin:40px auto; border-radius:10px; padding:40px;">
-        <div style="text-align:center; margin-bottom:20px; border-bottom:2px solid #1a6b4a; padding-bottom:15px;">
-            <h1 style="color:#1a6b4a; font-size:28px; margin-bottom:5px;">FarmaVida</h1>
-            <p style="color:#888; font-size:13px;">Droguería y Farmacia</p>
-            <h3 style="margin-top:10px;">Orden de Compra</h3>
-            <p style="font-size:13px;">No. <strong id="orden-numero"></strong></p>
+<div id="modal-factura-compra" class="invoice-modal">
+    <div class="invoice-content">
+        <div class="invoice-header">
+            <h1>FarmaVida</h1>
+            <p>Droguería y Farmacia</p>
+            <h3>Orden de Compra</h3>
+            <p>No. <strong id="orden-numero"></strong></p>
         </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:20px; font-size:14px;">
+        <div class="invoice-info-grid">
             <div>
                 <p><strong>Proveedor:</strong> <span id="orden-proveedor-nombre"></span></p>
                 <p><strong>Teléfono:</strong> <span id="orden-proveedor-telefono"></span></p>
@@ -966,24 +1011,24 @@
                 <p><strong>Registrado por:</strong> <span id="orden-usuario"></span></p>
             </div>
         </div>
-        <table style="width:100%; border-collapse:collapse; margin-bottom:15px; font-size:13px;">
+        <table class="invoice-table">
             <thead>
-                <tr style="background:#1a6b4a; color:white;">
-                    <th style="padding:8px;">Producto</th>
-                    <th style="padding:8px; text-align:center;">Cantidad</th>
-                    <th style="padding:8px; text-align:right;">Precio unit.</th>
-                    <th style="padding:8px; text-align:right;">Vencimiento</th>
-                    <th style="padding:8px; text-align:right;">Subtotal</th>
+                <tr>
+                    <th>Producto</th>
+                    <th style="text-align:center;">Cantidad</th>
+                    <th style="text-align:right;">Precio unit.</th>
+                    <th style="text-align:right;">Vencimiento</th>
+                    <th style="text-align:right;">Subtotal</th>
                 </tr>
             </thead>
             <tbody id="orden-items"></tbody>
         </table>
-        <div style="text-align:right; font-size:14px;">
-            <p style="font-size:18px; color:#1a6b4a;"><strong>Total: $<span id="orden-total"></span></strong></p>
+        <div class="invoice-total">
+            <p style="font-size:18px; color:var(--primary);"><strong>Total: $<span id="orden-total"></span></strong></p>
         </div>
-        <div style="display:flex; gap:10px; margin-top:20px; justify-content:center;">
-            <button onclick="imprimirFactura('factura-compra')" style="padding:10px 24px; background:#1a6b4a; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">Imprimir</button>
-            <button onclick="cerrarFactura('modal-factura-compra')" style="padding:10px 24px; background:#888; color:white; border:none; border-radius:6px; cursor:pointer; font-size:14px;">Cerrar</button>
+        <div class="invoice-actions">
+            <button onclick="imprimirFactura('factura-compra')">Imprimir</button>
+            <button onclick="cerrarFactura('modal-factura-compra')">Cerrar</button>
         </div>
     </div>
 </div>
