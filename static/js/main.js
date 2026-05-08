@@ -528,7 +528,9 @@ function guardarCompra() {
         limpiarCompra();
         cargarProductos();
         cargarInventario();
+        cargarProductosVenta();
     } else {
+
         alert('Error: ' + data.mensaje);
     }
 });
