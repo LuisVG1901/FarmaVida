@@ -915,6 +915,8 @@ body.dark-mode textarea::placeholder {
         width: 100%;
         padding: 10px 20px;
     }
+}
+
 .invoice-modal {
     display: none;
     position: fixed;
