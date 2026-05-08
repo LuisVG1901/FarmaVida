@@ -384,11 +384,18 @@ h2 {
 }
 
 .btn-exportar {
-    background-color: #107c41 !important; /* Excel green */
+    background-color: var(--primary) !important; /* match page primary color */
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.18s ease;
 }
 
 .btn-exportar:hover {
-    background-color: #0c5e31 !important;
+    background-color: var(--primary-hover) !important;
 }
 
 /* Tabla */
