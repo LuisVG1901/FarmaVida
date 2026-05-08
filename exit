@@ -1,0 +1,167 @@
+[33mcommit 79b3d5a499c8fa56759c06eaadc6f3ad36069d28[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Fri May 8 11:01:31 2026 -0500
+
+    Modificacion facturas
+
+[33mcommit 4d9d22dbccb92827f83d7955947004a97cd6c37b[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Fri May 8 10:50:09 2026 -0500
+
+    Modificacion productos
+
+[33mcommit 4e0478645d97f8a28a9c6bab8cf5ccc650840877[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Fri May 8 10:40:47 2026 -0500
+
+    Modificacion color boton reportes excel
+
+[33mcommit c8f1a7bda3b961effa4f749418996f839d486f49[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Mon Apr 27 12:38:28 2026 -0500
+
+    Modificacion barra lateral
+
+[33mcommit 7134bc0f2cc96d4adc39ece18eebb703948147f0[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Mon Apr 27 12:18:26 2026 -0500
+
+    Modificacion boton claro/oscuro
+
+[33mcommit b80f3b3a50f4a2c32e6ad2e9c378586ea0093bb3[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Mon Apr 27 11:29:17 2026 -0500
+
+    Mensaje bienvenida corregido
+
+[33mcommit 731fc6aa2f8d872c0fb545f895de05d91678e109[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:57:05 2026 -0500
+
+    agrega boton para exportar reportes a excel
+
+[33mcommit cf625a9f26e315151558ce559a351454e1717112[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:45:58 2026 -0500
+
+    corregir modulo reportes
+
+[33mcommit 36b84fe3cbed355c619e8b39a7394f546f403032[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:40:58 2026 -0500
+
+    corregir estado activo modo oscuro
+
+[33mcommit 087636564c190c493a2bab65e22cc81053625aa6[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:35:08 2026 -0500
+
+    corregir boton modo oscuro en movil 4
+
+[33mcommit 676ee256fb485525de59ecc33712b24543ca1fa9[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:19:28 2026 -0500
+
+    revertir todo
+
+[33mcommit dc2c7b89f22f0dd20c6e3e63eff51440de84e9eb[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:17:45 2026 -0500
+
+    mover boton modo oscuro
+
+[33mcommit 4da96a0ef94f87dec6870fb3f23b6e3fe79e889f[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:13:15 2026 -0500
+
+    corregir boton modo oscuro en movil 4
+
+[33mcommit b730dfeff71bae592d7265e911e61bfa260ceefe[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:09:42 2026 -0500
+
+    corregir boton modo oscuro en movil 3
+
+[33mcommit 8f17b05a2d236f2a4f51f311db80acf2eb1bf1ca[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:06:59 2026 -0500
+
+    corregir boton modo oscuro en movil 2
+
+[33mcommit fa7d54ccaaf1ef4a2c7238a85d9392157eaa71f2[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sun Apr 26 17:02:26 2026 -0500
+
+    corregir boton modo oscuro en movil
+
+[33mcommit 691b3ed328e57ed588e5e56960935c68d4d997d9[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sat Apr 25 18:44:33 2026 -0500
+
+    corregir modulo ventas
+
+[33mcommit 3c94312515646fbc43a2f26040e1c558c98d4b15[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sat Apr 25 18:41:07 2026 -0500
+
+    corregir confirmar compra
+
+[33mcommit 41de14b6d9c29f7d112bca20e1b1125452a1f3f7[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sat Apr 25 18:37:18 2026 -0500
+
+    corregir cursor compras
+
+[33mcommit eba44a1f94cb15f4395cfc7151056a4c0bb98333[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sat Apr 25 17:46:56 2026 -0500
+
+    corregir orden tablas
+
+[33mcommit ba9fbcbfb5404c1243644099c754aad0755e6871[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sat Apr 25 17:42:53 2026 -0500
+
+    reiniciar base de datos
+
+[33mcommit 0c0615db55e2268fab81cbfdc6feab01e80d4bdc[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sat Apr 25 17:28:52 2026 -0500
+
+    inicializar base de datos
+
+[33mcommit aac9b0f26943596fce2f45be381fdfaae36330d2[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sat Apr 25 17:23:25 2026 -0500
+
+    Corregir variable de entorno
+
+[33mcommit 038c21080dd65a62c587198ac4d00fdaab64b95b[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Sat Apr 25 00:25:21 2026 -0500
+
+    Fix conexion base de datos Railway
+
+[33mcommit 468cf3f1d6350d1403322665960c8368382fce69[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Fri Apr 24 23:51:42 2026 -0500
+
+    configurar base de datos Railway
+
+[33mcommit 1d135c2c3847ff332c3c29694a2149f7d9285b9f[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Fri Apr 24 23:45:49 2026 -0500
+
+    configurar puerto para Railway
+
+[33mcommit 1a560a73c03d1034e9d94d5156ed3c8a0b5eba5f[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Fri Apr 24 23:39:37 2026 -0500
+
+    agregar requirements
+
+[33mcommit 2370530c72b432950818096a7e5008efce971df8[m
+Author: Luis Vergara <vergaragarcesl@gmail.com>
+Date:   Fri Apr 24 23:27:08 2026 -0500
+
+    primer commit
