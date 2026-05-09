@@ -1955,7 +1955,8 @@ function exportarExcel(idTabla, nombreArchivo) {
     const wb = XLSX.utils.table_to_book(tabla, { sheet: "Reporte" });
     
     // Generar la fecha actual para el nombre del archivo
-    const fecha = new Date().toISOString().split('T')[0];
+    const hoy = new Date();
+    const fecha = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
     const nombreFinal = `${nombreArchivo}_${fecha}.xlsx`;
     
     // Descargar el archivo
