@@ -1590,7 +1590,7 @@ const hoy = new Date();
 for (let i = 6; i >= 0; i--) {
     const d = new Date(hoy);
     d.setDate(hoy.getDate() - i);
-    const key = d.toISOString().split('T')[0];
+    const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const venta = data.ventas_semana.find(v => v.dia === key);
     dias.push(d.toLocaleDateString('es-CO', { weekday: 'short', day: 'numeric' }));
     montos.push(venta ? parseFloat(venta.monto) : 0);
@@ -1709,7 +1709,10 @@ function cargarReportes() {
 }
 
 function fechaISO(date) {
-    return date.toISOString().split('T')[0];
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
 
 function rangoFechas(tipo) {
