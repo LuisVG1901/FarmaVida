@@ -165,8 +165,9 @@ h2 {
     border: 1px solid var(--border);
     border-radius: var(--radius-sm);
     font-size: 14px;
-    background-color: var(--surface);
-    color: var(--text);
+    background-color: var(--surface) !important;
+    color: var(--text) !important;
+    transition: all 0.2s ease;
 }
 /* Placeholder styling for dark mode */
 .login-container input::placeholder {
@@ -759,10 +760,10 @@ body.dark-mode textarea::placeholder {
     color: var(--text-muted);
 }
 
-/* Fix para el autocompletado del navegador en modo oscuro */
-body.dark-mode input:-webkit-autofill,
-body.dark-mode input:-webkit-autofill:hover, 
-body.dark-mode input:-webkit-autofill:focus {
+/* Fix para el autocompletado del navegador (respeta el tema claro/oscuro) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover, 
+input:-webkit-autofill:focus {
     -webkit-text-fill-color: var(--text) !important;
     -webkit-box-shadow: 0 0 0px 1000px var(--surface) inset !important;
     transition: background-color 5000s ease-in-out 0s;
