@@ -946,12 +946,14 @@ function calcularCambio() {
     const cambio = efectivo - total;
     
     const spanCambio = document.getElementById('venta-cambio');
+    const containerCambio = document.getElementById('venta-cambio-container');
+    
     if (cambio < 0) {
         spanCambio.textContent = '0';
-        spanCambio.style.color = '#e67e22';
+        containerCambio.style.color = '#ffb347'; // Naranja pálido
     } else {
         spanCambio.textContent = cambio.toLocaleString();
-        spanCambio.style.color = '#27ae60';
+        containerCambio.style.color = '#2f7a5f'; // Verde principal de la página
     }
 }
 
