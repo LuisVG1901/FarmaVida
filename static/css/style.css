@@ -1267,17 +1267,19 @@ body.dark-mode .invoice-table thead {
     font-size: 13px;
     text-transform: uppercase;
     font-weight: 700;
-    padding: 14px 15px;
+    padding: 10px 12px; /* Reducido */
     border-bottom: 2px solid rgba(0,0,0,0.1);
     color: white !important;
     letter-spacing: 0.5px;
 }
 
 .invoice-table td {
-    padding: 15px;
+    padding: 10px 12px; /* Reducido */
     border-bottom: 1px solid #f3f4f6;
-    font-size: 15px;
+    font-size: 14px; /* Un poco más pequeña para que quepa mejor */
     color: #111827 !important;
+    white-space: normal; /* Permitir salto de línea */
+    word-break: break-word;
 }
 
 body.dark-mode .invoice-table td {
@@ -1288,6 +1290,7 @@ body.dark-mode .invoice-table td {
 .invoice-table td:first-child {
     font-weight: 600;
     color: #1a4d3c !important;
+    width: 45%; /* Definir ancho para evitar que empuje el resto */
 }
 
 body.dark-mode .invoice-table td:first-child {
