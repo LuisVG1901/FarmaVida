@@ -74,6 +74,16 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    const inputModificarCedula = document.getElementById('modificar-cedula-venta');
+    if (inputModificarCedula) {
+        inputModificarCedula.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarClienteModificar();
+            }
+        });
+    }
+
     if (document.getElementById('usuarios')) {
         cargarUsuarios();
     }
