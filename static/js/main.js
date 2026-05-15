@@ -908,6 +908,9 @@ function confirmarVenta() {
 }))
     };
 
+    const efectivo = parseFloat(document.getElementById('venta-efectivo').value) || 0;
+    const cambio = parseFloat(document.getElementById('venta-cambio').textContent.replace(/\./g, '')) || 0;
+
     fetch('/ventas/agregar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -916,6 +919,8 @@ function confirmarVenta() {
     .then(res => res.json())
     .then(data => {
     if (data.ok) {
+        data.efectivo_recibido = efectivo;
+        data.cambio_devuelto = cambio;
         mostrarFacturaVenta(data);
         limpiarVenta();
         cargarInventario();
@@ -1051,7 +1056,10 @@ function verFacturaHistorial(v) {
         puntos_ganados: v.puntos_ganados,
         puntos_antes: v.puntos_antes,
         puntos_redimidos: v.puntos_redimidos,
-        descuento: v.puntos_redimidos * 100
+        descuento: v.puntos_redimidos * 100,
+        efectivo_recibido: 0,
+        cambio_devuelto: 0,
+        es_historial: true
     };
     mostrarFacturaVenta(data);
 }
@@ -1263,6 +1271,17 @@ function mostrarFacturaVenta(data) {
     }
 
     document.getElementById('factura-total').textContent = parseFloat(data.total).toLocaleString();
+    
+    // Detalle de pago (efectivo y cambio)
+    const detallePago = document.getElementById('factura-pago-detalle');
+    if (data.efectivo_recibido > 0 || !data.es_historial) {
+        detallePago.style.display = 'block';
+        document.getElementById('factura-recibido').textContent = parseFloat(data.efectivo_recibido || 0).toLocaleString();
+        document.getElementById('factura-cambio').textContent = parseFloat(data.cambio_devuelto || 0).toLocaleString();
+    } else {
+        detallePago.style.display = 'none';
+    }
+
     document.getElementById('modal-factura-venta').style.display = 'block';
 }
 

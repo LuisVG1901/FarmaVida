@@ -1266,6 +1266,16 @@ body.dark-mode .invoice-actions {
     background-color: #2d3748;
 }
 
+.invoice-payment-detail {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed rgba(0, 0, 0, 0.1);
+}
+
+body.dark-mode .invoice-payment-detail {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
 .btn-invoice {
     padding: 12px 25px;
     border-radius: 10px;

@@ -960,7 +960,7 @@
                         <span>Puntos redimidos:</span>
                         <span id="factura-puntos-redimidos"></span>
                     </div>
-                    <div class="total-row">
+                    <div class="total-row" id="factura-puntos-actuales-row">
                         <span>Puntos actuales:</span>
                         <span id="factura-puntos-despues"></span>
                     </div>
@@ -971,6 +971,16 @@
                     <div class="total-row grand-total">
                         <span>Total a Pagar:</span>
                         <span>$<span id="factura-total"></span></span>
+                    </div>
+                    <div id="factura-pago-detalle" class="invoice-payment-detail">
+                        <div class="total-row">
+                            <span>Efectivo recibido:</span>
+                            <span>$<span id="factura-recibido">0</span></span>
+                        </div>
+                        <div class="total-row">
+                            <span>Cambio:</span>
+                            <span id="factura-cambio-valor">$<span id="factura-cambio">0</span></span>
+                        </div>
                     </div>
                 </div>
             </div>
