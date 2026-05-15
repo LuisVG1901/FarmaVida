@@ -1168,29 +1168,35 @@ body.dark-mode .invoice-card {
 }
 
 .invoice-table thead {
-    background-color: #f9fafb !important;
-    color: #4b5563 !important;
+    background-color: #2f7a5f !important;
+    color: white !important;
 }
 
 body.dark-mode .invoice-table thead {
-    background-color: #f9fafb !important;
-    color: #4b5563 !important;
+    background-color: #2f7a5f !important;
+    color: white !important;
 }
 
 .invoice-table th {
-    font-size: 12px;
+    font-size: 13px;
     text-transform: uppercase;
-    font-weight: 600;
-    padding: 12px 15px;
-    border-bottom: 2px solid #f3f4f6;
-    color: #4b5563 !important;
+    font-weight: 700;
+    padding: 14px 15px;
+    border-bottom: 2px solid rgba(0,0,0,0.1);
+    color: white !important; /* Texto blanco para máximo contraste */
+    letter-spacing: 0.5px;
 }
 
 .invoice-table td {
     padding: 15px;
     border-bottom: 1px solid #f3f4f6;
-    font-size: 14px;
-    color: #1f2937 !important;
+    font-size: 15px; /* Un poco más grande */
+    color: #111827 !important;
+}
+
+.invoice-table td:first-child {
+    font-weight: 600; /* Producto en negrita suave para resaltar */
+    color: #1a4d3c !important; /* Color verde oscuro elegante para el nombre */
 }
 
 .invoice-footer {
