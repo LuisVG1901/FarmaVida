@@ -870,6 +870,9 @@ function calcularTotalVenta() {
     const descuento = puntosRedimir * 100;
     const total = Math.max(0, subtotal - descuento);
     document.getElementById('total-venta').textContent = total.toLocaleString();
+    
+    // Sincronizar con la calculadora de cambio
+    calcularCambio();
 }
 
 function quitarItemVenta(index) {
