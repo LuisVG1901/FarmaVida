@@ -64,6 +64,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    const inputVentaCedula = document.getElementById('venta-cedula');
+    if (inputVentaCedula) {
+        inputVentaCedula.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                buscarClienteVenta();
+            }
+        });
+    }
+
     if (document.getElementById('usuarios')) {
         cargarUsuarios();
     }
