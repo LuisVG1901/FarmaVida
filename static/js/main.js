@@ -35,6 +35,35 @@ document.addEventListener('DOMContentLoaded', function() {
         cargarProductosCompra();
     }
 
+    if (document.getElementById('grafico-ventas')) {
+        cargarInicio();
+    }
+
+    // Eventos de teclado para agilizar el registro
+    const inputVentaCant = document.getElementById('venta-cantidad');
+    if (inputVentaCant) {
+        inputVentaCant.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                agregarItemVenta();
+            }
+        });
+    }
+
+    const inputCompraCant = document.getElementById('compra-cantidad');
+    const inputCompraPrecio = document.getElementById('compra-precio');
+    
+    [inputCompraCant, inputCompraPrecio].forEach(input => {
+        if (input) {
+            input.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    agregarItemCompra();
+                }
+            });
+        }
+    });
+
     if (document.getElementById('usuarios')) {
         cargarUsuarios();
     }
