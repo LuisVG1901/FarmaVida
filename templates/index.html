@@ -388,21 +388,24 @@
                 </table>
             </div>
 
-            <!-- Modal Modificar Venta -->
-            <div id="modal-modificar-venta" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
-                <div style="background:white; width:400px; margin:100px auto; border-radius:10px; padding:30px;">
-                    <h3 style="color:#1a6b4a; margin-bottom:20px;">Modificar cliente de la venta</h3>
+            <div id="modal-modificar-venta" class="modal-overlay" style="display:none;">
+                <div class="modal-card">
+                    <h3 class="modal-title">Modificar cliente de la venta</h3>
                     <input type="hidden" id="modificar-id-venta">
-                    <label style="font-size:13px; color:#555;">Nueva cédula del cliente</label>
-                    <div style="display:flex; gap:8px; margin-top:5px;">
-                        <input type="text" id="modificar-cedula-venta" placeholder="Cédula">
-                        <button onclick="buscarClienteModificar()">Buscar</button>
+                    <div class="fila-form">
+                        <div>
+                            <label>Nueva cédula del cliente</label>
+                            <div style="display:flex; gap:8px;">
+                                <input type="text" id="modificar-cedula-venta" placeholder="Cédula">
+                                <button onclick="buscarClienteModificar()">Buscar</button>
+                            </div>
+                        </div>
                     </div>
-                    <div id="modificar-info-cliente" style="display:none; margin-top:10px; background:#f0faf5; padding:10px; border-radius:6px; font-size:14px;">
+                    <div id="modificar-info-cliente" class="info-box" style="display:none;">
                         <strong id="modificar-nombre-cliente"></strong>
                     </div>
                     <input type="hidden" id="modificar-id-cliente-nuevo">
-                    <div style="display:flex; gap:10px; margin-top:20px;">
+                    <div class="botones-form" style="margin-top:20px;">
                         <button onclick="guardarModificacionVenta()">Guardar</button>
                         <button class="btn-cancelar" onclick="cerrarModalModificarVenta()">Cancelar</button>
                     </div>
@@ -523,17 +526,21 @@
                     </thead>
                     <tbody id="cuerpo-historial-compras"></tbody>
                 </table>
-                <div id="modal-modificar-compra" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000;">
-                    <div style="background:white; width:500px; margin:60px auto; border-radius:10px; padding:30px; max-height:80vh; overflow-y:auto;">
-                        <h3 style="color:#1a6b4a; margin-bottom:20px;">Modificar compra</h3>
+                <div id="modal-modificar-compra" class="modal-overlay" style="display:none;">
+                    <div class="modal-card">
+                        <h3 class="modal-title">Modificar compra</h3>
                         <input type="hidden" id="modificar-id-compra">
-                        <label style="font-size:13px; color:#555;">Proveedor</label>
-                        <select id="modificar-proveedor-compra" style="width:100%; padding:10px; border:1px solid #ddd; border-radius:6px; margin-top:5px; margin-bottom:15px;">
-                            <option value="">Selecciona un proveedor</option>
-                        </select>
-                        <h4 style="color:#1a6b4a; margin-bottom:10px;">Fechas de vencimiento</h4>
+                        <div class="fila-form">
+                            <div>
+                                <label>Proveedor</label>
+                                <select id="modificar-proveedor-compra">
+                                    <option value="">Selecciona un proveedor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <h4 style="color:#1a6b4a; margin-bottom:10px; margin-top:15px;">Fechas de vencimiento</h4>
                         <div id="modificar-lotes-compra"></div>
-                        <div style="display:flex; gap:10px; margin-top:20px;">
+                        <div class="botones-form" style="margin-top:20px;">
                             <button onclick="guardarModificacionCompra()">Guardar</button>
                             <button class="btn-cancelar" onclick="cerrarModalModificarCompra()">Cancelar</button>
                         </div>
