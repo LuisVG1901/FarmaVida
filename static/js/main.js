@@ -932,9 +932,27 @@ function limpiarVenta() {
     document.getElementById('venta-id-cliente').value = '';
     document.getElementById('venta-puntos-disponibles').value = '0';
     document.getElementById('puntos-redimir').value = '';
+    document.getElementById('venta-efectivo').value = '';
+    document.getElementById('venta-cambio').textContent = '0';
+    itemsVenta = [];
     document.getElementById('info-cliente-venta').style.display = 'none';
     document.getElementById('total-venta').textContent = '0';
     document.getElementById('subtotal-venta').textContent = '0';
+}
+
+function calcularCambio() {
+    const total = parseFloat(document.getElementById('total-venta').textContent.replace(/\./g, '').replace(/,/g, '')) || 0;
+    const efectivo = parseFloat(document.getElementById('venta-efectivo').value) || 0;
+    const cambio = efectivo - total;
+    
+    const spanCambio = document.getElementById('venta-cambio');
+    if (cambio < 0) {
+        spanCambio.textContent = '0';
+        spanCambio.style.color = '#e67e22';
+    } else {
+        spanCambio.textContent = cambio.toLocaleString();
+        spanCambio.style.color = '#27ae60';
+    }
 }
 
 function cargarHistorialVentas(params = {}) {
