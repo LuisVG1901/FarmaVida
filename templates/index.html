@@ -902,94 +902,142 @@
     <script src="{{ url_for('static', filename='js/main.js') }}"></script>
 
 <!-- Factura de venta -->
-<div id="modal-factura-venta" class="invoice-modal">
-    <div class="invoice-content">
+<div id="modal-factura-venta" class="invoice-overlay">
+    <div class="invoice-card">
         <div class="invoice-header">
-            <h1>FarmaVida</h1>
-            <p>Droguería y Farmacia</p>
-            <h3>Factura de Venta</h3>
-            <p>No. <strong id="factura-numero"></strong></p>
-        </div>
-        <div class="invoice-info-grid">
-            <div>
-                <p><strong>Cliente:</strong> <span id="factura-cliente-nombre"></span></p>
-                <p><strong>Cédula:</strong> <span id="factura-cliente-cedula"></span></p>
-                <p><strong>Contacto:</strong> <span id="factura-cliente-contacto"></span></p>
+            <div class="invoice-header-left">
+                <h2>FarmaVida</h2>
+                <p>Droguería y Farmacia — Salud a su alcance</p>
             </div>
-            <div>
-                <p><strong>Fecha:</strong> <span id="factura-fecha"></span></p>
-                <p><strong>Atendido por:</strong> <span id="factura-usuario"></span></p>
-                <p><strong>Puntos ganados:</strong> <span id="factura-puntos-ganados"></span></p>
+            <div class="invoice-header-right">
+                <span class="invoice-number-label">Factura de Venta</span>
+                <span class="invoice-number-value">#<span id="factura-numero"></span></span>
             </div>
         </div>
-        <table class="invoice-table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th style="text-align:center;">Cantidad</th>
-                    <th style="text-align:right;">Precio unit.</th>
-                    <th style="text-align:right;">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody id="factura-items"></tbody>
-        </table>
-        <div class="invoice-total">
-            <p id="factura-descuento-row" style="display:none;"><strong>Descuento por puntos:</strong> -$<span id="factura-descuento"></span></p>
-            <p style="font-size:18px; color:var(--primary);"><strong>Total: $<span id="factura-total"></span></strong></p>
-        </div>
-        <div class="invoice-puntos-info">
-            <p><strong>Puntos antes:</strong> <span id="factura-puntos-antes"></span></p>
-            <p><strong>Puntos redimidos:</strong> <span id="factura-puntos-redimidos"></span></p>
-            <p><strong>Puntos actuales:</strong> <span id="factura-puntos-despues"></span></p>
+        <div class="invoice-body">
+            <div class="invoice-info-grid">
+                <div class="info-section">
+                    <h4>Información del Cliente</h4>
+                    <p><strong id="factura-cliente-nombre"></strong></p>
+                    <p>C.C. <span id="factura-cliente-cedula"></span></p>
+                    <p>Contacto: <span id="factura-cliente-contacto"></span></p>
+                </div>
+                <div class="info-section">
+                    <h4>Detalles de la Factura</h4>
+                    <p><strong>Fecha:</strong> <span id="factura-fecha"></span></p>
+                    <p><strong>Atendido por:</strong> <span id="factura-usuario"></span></p>
+                    <p><strong>Puntos ganados:</strong> <span id="factura-puntos-ganados"></span></p>
+                </div>
+            </div>
+            <div class="invoice-table-container">
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th style="text-align:center;">Cant.</th>
+                            <th style="text-align:right;">Precio Unit.</th>
+                            <th style="text-align:right;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="factura-items"></tbody>
+                </table>
+            </div>
+            <div class="invoice-footer">
+                <div class="invoice-totals">
+                    <div class="total-row">
+                        <span>Puntos anteriores:</span>
+                        <span id="factura-puntos-antes"></span>
+                    </div>
+                    <div class="total-row">
+                        <span>Puntos redimidos:</span>
+                        <span id="factura-puntos-redimidos"></span>
+                    </div>
+                    <div class="total-row">
+                        <span>Puntos actuales:</span>
+                        <span id="factura-puntos-despues"></span>
+                    </div>
+                    <div class="total-row" id="factura-descuento-row" style="display:none;">
+                        <span>Descuento por puntos:</span>
+                        <span>-$<span id="factura-descuento"></span></span>
+                    </div>
+                    <div class="total-row grand-total">
+                        <span>Total a Pagar:</span>
+                        <span>$<span id="factura-total"></span></span>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="invoice-actions">
-            <button onclick="imprimirFactura('factura-venta')">Imprimir</button>
-            <button onclick="cerrarFactura('modal-factura-venta')">Cerrar</button>
+            <button class="btn-invoice btn-invoice-print" onclick="imprimirFactura('factura-venta')">
+                <span>🖨️</span> Imprimir Factura
+            </button>
+            <button class="btn-invoice btn-invoice-close" onclick="cerrarFactura('modal-factura-venta')">
+                Cerrar
+            </button>
         </div>
     </div>
 </div>
-    
 
 <!-- Factura de compra -->
-<div id="modal-factura-compra" class="invoice-modal">
-    <div class="invoice-content">
+<div id="modal-factura-compra" class="invoice-overlay">
+    <div class="invoice-card">
         <div class="invoice-header">
-            <h1>FarmaVida</h1>
-            <p>Droguería y Farmacia</p>
-            <h3>Orden de Compra</h3>
-            <p>No. <strong id="orden-numero"></strong></p>
-        </div>
-        <div class="invoice-info-grid">
-            <div>
-                <p><strong>Proveedor:</strong> <span id="orden-proveedor-nombre"></span></p>
-                <p><strong>Teléfono:</strong> <span id="orden-proveedor-telefono"></span></p>
-                <p><strong>Dirección:</strong> <span id="orden-proveedor-direccion"></span></p>
+            <div class="invoice-header-left">
+                <h2>FarmaVida</h2>
+                <p>Droguería y Farmacia — Orden de Pedido</p>
             </div>
-            <div>
-                <p><strong>Fecha:</strong> <span id="orden-fecha"></span></p>
-                <p><strong>Registrado por:</strong> <span id="orden-usuario"></span></p>
+            <div class="invoice-header-right">
+                <span class="invoice-number-label">Orden de Compra</span>
+                <span class="invoice-number-value">#<span id="orden-numero"></span></span>
             </div>
         </div>
-        <table class="invoice-table">
-            <thead>
-                <tr>
-                    <th>Producto</th>
-                    <th style="text-align:center;">Cantidad</th>
-                    <th style="text-align:right;">Precio unit.</th>
-                    <th style="text-align:right;">Vencimiento</th>
-                    <th style="text-align:right;">Subtotal</th>
-                </tr>
-            </thead>
-            <tbody id="orden-items"></tbody>
-        </table>
-        <div class="invoice-total">
-            <p style="font-size:18px; color:var(--primary);"><strong>Total: $<span id="orden-total"></span></strong></p>
+        <div class="invoice-body">
+            <div class="invoice-info-grid">
+                <div class="info-section">
+                    <h4>Información del Proveedor</h4>
+                    <p><strong id="orden-proveedor-nombre"></strong></p>
+                    <p>Tel: <span id="orden-proveedor-telefono"></span></p>
+                    <p>Dir: <span id="orden-proveedor-direccion"></span></p>
+                </div>
+                <div class="info-section">
+                    <h4>Detalles de la Orden</h4>
+                    <p><strong>Fecha:</strong> <span id="orden-fecha"></span></p>
+                    <p><strong>Registrado por:</strong> <span id="orden-usuario"></span></p>
+                </div>
+            </div>
+            <div class="invoice-table-container">
+                <table class="invoice-table">
+                    <thead>
+                        <tr>
+                            <th>Producto</th>
+                            <th style="text-align:center;">Cant.</th>
+                            <th style="text-align:right;">Costo Unit.</th>
+                            <th style="text-align:right;">Vencimiento</th>
+                            <th style="text-align:right;">Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orden-items"></tbody>
+                </table>
+            </div>
+            <div class="invoice-footer">
+                <div class="invoice-totals">
+                    <div class="total-row grand-total">
+                        <span>Total de Compra:</span>
+                        <span>$<span id="orden-total"></span></span>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="invoice-actions">
-            <button onclick="imprimirFactura('factura-compra')">Imprimir</button>
-            <button onclick="cerrarFactura('modal-factura-compra')">Cerrar</button>
+            <button class="btn-invoice btn-invoice-print" onclick="imprimirFactura('factura-compra')">
+                <span>🖨️</span> Imprimir Orden
+            </button>
+            <button class="btn-invoice btn-invoice-close" onclick="cerrarFactura('modal-factura-compra')">
+                Cerrar
+            </button>
         </div>
     </div>
 </div>
+
 </body>
 </html>

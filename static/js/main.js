@@ -950,13 +950,13 @@ function cargarHistorialVentas(params = {}) {
             const cuerpo = document.getElementById('cuerpo-historial-ventas');
             cuerpo.innerHTML = '';
             data.ventas.forEach(v => {
-                const productos = v.items.map(i => `${i.nombre} (${i.cantidad})`).join(', ');
+                const productos = v.items.map(i => `<span class="product-badge">${i.nombre} (${i.cantidad})</span>`).join('');
                 cuerpo.innerHTML += `
                     <tr>
                         <td>${String(v.numero_factura).padStart(6, '0')}</td>
                         <td>${v.fecha}</td>
                         <td>${v.cliente}</td>
-                        <td style="font-size:12px;">${productos}</td>
+                        <td style="min-width:200px;">${productos}</td>
                         <td>$${parseFloat(v.total).toLocaleString()}</td>
                         <td>
                             <button class="btn-editar" onclick="verFacturaHistorial(${JSON.stringify(v).replace(/"/g, '&quot;')})">Ver factura</button>
@@ -1102,13 +1102,13 @@ function cargarHistorialCompras(params = {}) {
             const cuerpo = document.getElementById('cuerpo-historial-compras');
             cuerpo.innerHTML = '';
             data.compras.forEach(c => {
-                const productos = c.items.map(i => `${i.nombre} (${i.cantidad})`).join(', ');
+                const productos = c.items.map(i => `<span class="product-badge">${i.nombre} (${i.cantidad})</span>`).join('');
                 cuerpo.innerHTML += `
                     <tr>
                         <td>${String(c.numero_orden).padStart(6, '0')}</td>
                         <td>${c.fecha}</td>
                         <td>${c.proveedor}</td>
-                        <td style="font-size:12px;">${productos}</td>
+                        <td style="min-width:200px;">${productos}</td>
                         <td>$${parseFloat(c.total).toLocaleString()}</td>
                         <td>
                             <button class="btn-editar" onclick="verOrdenHistorial(${JSON.stringify(c).replace(/"/g, '&quot;')})">Ver orden</button>
@@ -1278,25 +1278,7 @@ function cerrarFactura(id) {
 }
 
 function imprimirFactura(id) {
-    const contenido = document.getElementById('modal-factura-' + id.replace('factura-', '')).innerHTML;
-    const ventana = window.open('', '_blank');
-    ventana.document.write(`
-        <html>
-        <head>
-            <title>FarmaVida - Factura</title>
-            <style>
-                body { font-family: Arial, sans-serif; padding: 20px; }
-                table { width: 100%; border-collapse: collapse; }
-                th { background: #1a6b4a; color: white; padding: 8px; }
-                td { padding: 8px; border-bottom: 1px solid #eee; }
-                button { display: none; }
-            </style>
-        </head>
-        <body>${contenido}</body>
-        </html>
-    `);
-    ventana.document.close();
-    ventana.print();
+    window.print();
 }
 function filtrarHistorialCompras() {
     const params = {
