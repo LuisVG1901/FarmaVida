@@ -1060,27 +1060,32 @@ body.dark-mode .invoice-puntos-info {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 2000;
-    backdrop-filter: blur(4px);
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 9999; /* Asegurar que esté por encima de todo */
+    backdrop-filter: blur(8px);
+    display: block; /* Cambiamos a block para usar posicionamiento absoluto en el hijo */
 }
 
 .modal-card {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* El truco maestro para centrar */
     background-color: white;
     width: 95%;
     max-width: 450px;
     padding: 35px;
-    border-radius: 20px;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease;
-    max-height: 90vh;
-    overflow-y: auto;
-    text-align: center; /* Centrar todo el contenido */
+    border-radius: 24px;
+    box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.8);
+    text-align: center;
+    animation: modalAppear 0.3s ease-out;
+}
+
+@keyframes modalAppear {
+    from { transform: translate(-50%, -40%); opacity: 0; }
+    to { transform: translate(-50%, -50%); opacity: 1; }
 }
 
 body.dark-mode .modal-card {
