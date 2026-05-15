@@ -1295,24 +1295,29 @@ body.dark-mode .invoice-table td:first-child {
 }
 
 .invoice-footer {
-    padding: 0 40px 40px;
+    padding: 40px;
+    background-color: transparent;
     display: flex;
-    justify-content: flex-end;
+    flex-direction: column;
+    align-items: flex-end; /* El bloque se queda a la derecha */
 }
 
-.invoice-totals {
-    width: 300px;
+.invoice-summary {
+    width: 100%;
+    max-width: 350px; /* Un poco más ancho para que se note la separación */
 }
 
 .total-row {
     display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
-    font-size: 14px;
+    justify-content: space-between; /* Clave: etiquetas izquierda, valores derecha */
+    padding: 10px 0;
+    font-size: 15px;
     color: inherit;
+    border-bottom: 1px solid rgba(0,0,0,0.05); /* Línea sutil para organizar mejor */
 }
 
 body.dark-mode .total-row {
+    border-bottom-color: rgba(255,255,255,0.05);
     color: #cbd5e1 !important;
 }
 
